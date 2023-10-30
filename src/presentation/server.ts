@@ -2,12 +2,16 @@ import { envs } from "../config/plugins/envs.plugin";
 import { CheckService } from "../domain/use-cases/checks/check-service";
 import { SendEmailLogs } from "../domain/use-cases/email/send-email-logs";
 import { FileSystemDataSource } from "../infrastructure/datasources/file-system.datasource";
+import { MongoLogDatasource } from "../infrastructure/datasources/mongo-log.datasource";
 import { LogRepositoryImpl } from "../infrastructure/repositories/log.repository.impl";
 import { CronService } from "./cron/cron-service";
 import { EmailService } from "./email/email.service";
 
-const fileSystemLogRepository = new LogRepositoryImpl(new FileSystemDataSource());
-
+//* se está usando como inyector de dependencia para el uso del file system
+const logRepository = new LogRepositoryImpl(
+    // new FileSystemDataSource()
+    new MongoLogDatasource()
+);
 const emailService = new EmailService();
 
 export class Server {
@@ -29,14 +33,14 @@ export class Server {
         // EmailServiceWithFileSystem.sendEmailWithFileSystemLogs(["epsaind@gmail.com"]);
 
         //* Crear una tarea de cron cada cierto tiempo
-        // CronService.createJob("*/5 * * * * *", () => {
-        //     const url = "https://google.com";
-        //     const checkService = new CheckService(
-        //         fileSystemLogRepository,
-        //         () => console.log(`${url} is ok`),
-        //         (error) => console.error(error)
-        //     );
-        //     checkService.execute(url);
-        // });
+        CronService.createJob("*/5 * * * * *", () => {
+            const url = "https://google.com";
+            const checkService = new CheckService(
+                logRepository,
+                () => console.log(`${url} is ok`),
+                (error) => console.error(error)
+            );
+            checkService.execute(url);
+        });
     }
 }
