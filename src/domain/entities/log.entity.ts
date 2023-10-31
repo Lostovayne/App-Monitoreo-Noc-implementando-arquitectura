@@ -12,6 +12,7 @@ export interface logEntityOptions {
 }
 
 export class LogEntity {
+    [x: string]: any;
     public level: LogSeverityLevel;
     public message: string;
     public createdAt: Date;

@@ -3,6 +3,7 @@ import { CheckService } from "../domain/use-cases/checks/check-service";
 import { SendEmailLogs } from "../domain/use-cases/email/send-email-logs";
 import { FileSystemDataSource } from "../infrastructure/datasources/file-system.datasource";
 import { MongoLogDatasource } from "../infrastructure/datasources/mongo-log.datasource";
+import { PostgresLogDatasource } from "../infrastructure/datasources/postgres-log,datasource";
 import { LogRepositoryImpl } from "../infrastructure/repositories/log.repository.impl";
 import { CronService } from "./cron/cron-service";
 import { EmailService } from "./email/email.service";
@@ -10,7 +11,8 @@ import { EmailService } from "./email/email.service";
 //* se está usando como inyector de dependencia para el uso del file system
 const logRepository = new LogRepositoryImpl(
     // new FileSystemDataSource()
-    new MongoLogDatasource()
+    // new MongoLogDatasource()
+    new PostgresLogDatasource()
 );
 const emailService = new EmailService();
 
@@ -27,9 +29,8 @@ export class Server {
         // });
 
         //* Formas de Mandar Email con archivos
-        // new SendEmailLogs(emailService, fileSystemLogRepository).execute(["epsaind@gmail.com"]);
-
-        // const EmailServiceWithFileSystem = new EmailService(fileSystemLogRepository);
+        // new SendEmailLogs(emailService, logRepository).execute(["epsaind@gmail.com"]);
+        // const EmailServiceWithFileSystem = new EmailService(logRepository);
         // EmailServiceWithFileSystem.sendEmailWithFileSystemLogs(["epsaind@gmail.com"]);
 
         //* Crear una tarea de cron cada cierto tiempo
